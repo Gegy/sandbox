@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.guardsquare:proguard-gradle:7.3.2'
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+tasks.register('proguard', proguard.gradle.ProGuardTask) {
+    injars(tasks.named('jar', Jar).flatMap { it.archiveFile })
+    outjars layout.buildDirectory.file("libs/renamed.jar")
+
+    libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+
+    dontoptimize
+    dontusemixedcaseclassnames
+    dontshrink
+    renamesourcefileattribute 'SourceFile'
+    keepattributes '*'
+    repackageclasses ''
+    allowaccessmodification
+}
